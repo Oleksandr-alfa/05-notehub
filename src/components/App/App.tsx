@@ -2,15 +2,18 @@
 import css from './App.module.css';
 import NoteList from '../NoteList/NoteList';
 
-import { useState } from 'react';
+import {  useState } from 'react';
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
 import { fetchNotes } from '../../services/noteService';
 import Pagination from '../Pagination/Pagination';
+import Modal from '../Modal/Modal';
+import NoteForm from '../NoteForm/NoteForm';
 
 
 function App() {
-const [page, setCurrentPage]=useState(1)
+  const [page, setCurrentPage] = useState(1)
+  const [isOpenModal, setIsOpenModal] = useState(false);
   
 
   const { data, isSuccess } = useQuery({
@@ -20,6 +23,10 @@ const [page, setCurrentPage]=useState(1)
     placeholderData: keepPreviousData,
     staleTime: 60 * 1000,
   })
+
+  const openModal = ()=>{
+    setIsOpenModal(true);
+  }
   console.log(data);
  
 
@@ -32,7 +39,8 @@ const [page, setCurrentPage]=useState(1)
           totalPages={data.totalPages}
           currentPage={page}
           onPageChange={setCurrentPage}/>}
-      {/* Кнопка створення нотатки */}
+        <button onClick={openModal } className={css.button}>Create note +</button>
+{isOpenModal && <Modal>{<NoteForm/>}</Modal>}
     </header>
       {data && <NoteList notes={data.notes} />}
   </div >

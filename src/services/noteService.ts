@@ -19,6 +19,7 @@ interface NotesHttpResponse {
   notes: Note[];
     totalPages: number;
     page: number;
+    perPage: number;
 };
 
 export const fetchNotes = async ( page: number): Promise<NotesHttpResponse> => {
@@ -26,7 +27,7 @@ export const fetchNotes = async ( page: number): Promise<NotesHttpResponse> => {
         params: {
             
             page,
-
+            perPage: 12,
         }
     })
     return data;
