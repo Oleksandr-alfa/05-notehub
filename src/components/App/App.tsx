@@ -9,20 +9,23 @@ import { fetchNotes } from '../../services/noteService';
 import Pagination from '../Pagination/Pagination';
 import Modal from '../Modal/Modal';
 import NoteForm from '../NoteForm/NoteForm';
+import SearchBox from '../SearchBox/SearchBox';
 
 
 function App() {
   const [page, setCurrentPage] = useState(1)
   const [isOpenModal, setIsOpenModal] = useState(false);
-  
+  const [search, setSearch]=useState("")
 
   const { data, isSuccess } = useQuery({
-    queryKey: ["notes", page],
-    queryFn: () => fetchNotes( page),
-  //  enabled: search!== '',
+    queryKey: ["notes", page, search],
+    queryFn: () => fetchNotes(search, page),
+  //  enabled: search!= '',
     placeholderData: keepPreviousData,
     staleTime: 60 * 1000,
   })
+
+  
 
   const openModal = ()=>{
     setIsOpenModal(true);
@@ -33,7 +36,7 @@ function App() {
   return (
   <div className={css.app}>
     <header className={css.toolbar}>
-      {/* Компонент SearchBox */}
+        {<SearchBox onSearch={setSearch} search={search} />}
         {isSuccess &&
           <Pagination
           totalPages={data.totalPages}

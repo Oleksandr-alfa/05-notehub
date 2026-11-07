@@ -20,12 +20,13 @@ interface NotesHttpResponse {
     totalPages: number;
     page: number;
     perPage: number;
+    
 };
 
-export const fetchNotes = async ( page: number): Promise<NotesHttpResponse> => {
+export const fetchNotes = async (  search: string,page: number): Promise<NotesHttpResponse> => {
     const { data } = await API.get<NotesHttpResponse>("/",{
         params: {
-            
+            search,
             page,
             perPage: 12,
         }
