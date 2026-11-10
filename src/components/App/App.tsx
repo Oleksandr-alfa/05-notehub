@@ -3,9 +3,10 @@ import css from './App.module.css';
 import NoteList from '../NoteList/NoteList';
 
 import {  useState } from 'react';
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, keepPreviousData, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useDebounce } from 'use-debounce';
 
-import { fetchNotes } from '../../services/noteService';
+import { createNote, fetchNotes } from '../../services/noteService';
 import Pagination from '../Pagination/Pagination';
 import Modal from '../Modal/Modal';
 import NoteForm from '../NoteForm/NoteForm';
@@ -15,35 +16,53 @@ import SearchBox from '../SearchBox/SearchBox';
 function App() {
   const [page, setCurrentPage] = useState(1)
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [search, setSearch]=useState("")
+  const [search, setSearch] = useState("");
+  
+  const [debouncedSearch] = useDebounce(search, 1000);
 
-  const { data, isSuccess } = useQuery({
-    queryKey: ["notes", page, search],
-    queryFn: () => fetchNotes(search, page),
-  //  enabled: search!= '',
-    placeholderData: keepPreviousData,
-    staleTime: 60 * 1000,
+  const queryClient = useQueryClient();
+
+  const {mutate: addNote} = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      closeModal();
+    }
   })
 
+  
+  const { data, isSuccess } = useQuery({
+    queryKey: ["notes", page, debouncedSearch],
+    queryFn: () => fetchNotes(debouncedSearch, page),
+   
+    placeholderData: keepPreviousData,
+    staleTime: 60 * 1000,
+  });
+
+ 
   
 
   const openModal = ()=>{
     setIsOpenModal(true);
   }
-  console.log(data);
+
+  const closeModal = () => {
+    setIsOpenModal(false);
+  }
+  
  
 
   return (
   <div className={css.app}>
     <header className={css.toolbar}>
         {<SearchBox onSearch={setSearch} search={search} />}
-        {isSuccess &&
+        {isSuccess && data.totalPages > 1 &&
           <Pagination
           totalPages={data.totalPages}
           currentPage={page}
           onPageChange={setCurrentPage}/>}
         <button onClick={openModal } className={css.button}>Create note +</button>
-{isOpenModal && <Modal>{<NoteForm/>}</Modal>}
+        {isOpenModal && <Modal><NoteForm onClose={closeModal} onSubmitNote={values => addNote(values)} /></Modal>}
     </header>
       {data && <NoteList notes={data.notes} />}
   </div >
