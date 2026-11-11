@@ -3,15 +3,10 @@ export interface Note {
     title: string,
     content: string,
     createdAt: string,
-    updateAt: string,
-    tag: string,
+    updatedAt: string,
+    tag: "Todo" | "Work" |"Personal" | "Meeting" | "Shopping",
 }
- export interface NotesHttpResponse {
-  notes: Note[];
-    totalPages: number;
-    page: number;
-    perPage: number;
-};
+ 
 
 export interface CreateNotes {
     title: string;
@@ -19,8 +14,5 @@ export interface CreateNotes {
     tag: string;
 }
 
-// export interface UpdateNotes {
-
-// }
 
 

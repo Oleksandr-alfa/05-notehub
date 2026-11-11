@@ -1,7 +1,7 @@
 
 
 import axios from "axios";
-import type { NotesHttpResponse, CreateNotes,  Note } from "../types/note"
+import type { CreateNotes,  Note } from "../types/note"
 const myKey = import.meta.env.VITE_NOTEHUB_TOKEN;
 
 const BASE_URL = "https://notehub-public.goit.study/api";
@@ -12,6 +12,13 @@ const API = axios.create({
         Authorization: `Bearer ${myKey}`,
     }
 });
+
+export interface NotesHttpResponse {
+  notes: Note[];
+    totalPages: number;
+    page: number;
+    perPage: number;
+};
 
 
 
@@ -26,14 +33,14 @@ export const fetchNotes = async (  search: string,page: number): Promise<NotesHt
     return data;
 }
 
-export const createNote = async (newNote: CreateNotes): Promise<NotesHttpResponse> => {
-    const res = await API.post<NotesHttpResponse>("/notes/", newNote);
+export const createNote = async (newNote: CreateNotes): Promise<Note> => {
+    const res = await API.post<Note>("/notes/", newNote);
     return res.data;
 }
 
-export const deleteNote = async (id: string): Promise<void> => {
-    await API.delete<Note>(`/notes/${id}`);
-    
+export const deleteNote = async (id: string): Promise<Note> => {
+    const res = await API.delete<Note>(`/notes/${id}`);
+    return res.data;
 }
 
 

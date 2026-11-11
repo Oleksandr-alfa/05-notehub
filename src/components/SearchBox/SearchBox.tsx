@@ -1,5 +1,5 @@
 import css from "./SearchBox.module.css";
-import toast from "react-hot-toast";
+
 
 interface SearchBoxProps {
     onSearch: (value: string) => void,
@@ -8,8 +8,7 @@ interface SearchBoxProps {
 
 function SearchBox({ search, onSearch}: SearchBoxProps) {
    
-    if (search === "")
-            toast.error("Please enter your search query.")
+   
     
     return (
         <input

@@ -3,10 +3,10 @@ import css from './App.module.css';
 import NoteList from '../NoteList/NoteList';
 
 import {  useState } from 'react';
-import { useQuery, keepPreviousData, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQuery, keepPreviousData} from "@tanstack/react-query";
 import { useDebounce } from 'use-debounce';
 
-import { createNote, fetchNotes } from '../../services/noteService';
+import { fetchNotes } from '../../services/noteService';
 import Pagination from '../Pagination/Pagination';
 import Modal from '../Modal/Modal';
 import NoteForm from '../NoteForm/NoteForm';
@@ -14,21 +14,13 @@ import SearchBox from '../SearchBox/SearchBox';
 
 
 function App() {
-  const [page, setCurrentPage] = useState(1)
+  const [page, setPage] = useState(1)
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [search, setSearch] = useState("");
   
   const [debouncedSearch] = useDebounce(search, 1000);
 
-  const queryClient = useQueryClient();
-
-  const {mutate: addNote} = useMutation({
-    mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-      closeModal();
-    }
-  })
+  
 
   
   const { data, isSuccess } = useQuery({
@@ -39,7 +31,10 @@ function App() {
     staleTime: 60 * 1000,
   });
 
- 
+  const handleSearchChange = (newSearch: string) => {
+    setSearch(newSearch);
+    setPage(1);
+  };
   
 
   const openModal = ()=>{
@@ -55,14 +50,14 @@ function App() {
   return (
   <div className={css.app}>
     <header className={css.toolbar}>
-        {<SearchBox onSearch={setSearch} search={search} />}
+        {<SearchBox onSearch={handleSearchChange} search={search} />}
         {isSuccess && data.totalPages > 1 &&
           <Pagination
           totalPages={data.totalPages}
           currentPage={page}
-          onPageChange={setCurrentPage}/>}
+          onPageChange={setPage}/>}
         <button onClick={openModal } className={css.button}>Create note +</button>
-        {isOpenModal && <Modal><NoteForm onClose={closeModal} onSubmitNote={values => addNote(values)} /></Modal>}
+        {isOpenModal && <Modal onClose={closeModal}><NoteForm onClose={closeModal}/></Modal>}
     </header>
       {data && <NoteList notes={data.notes} />}
   </div >
