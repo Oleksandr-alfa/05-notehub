@@ -24,10 +24,10 @@ function Modal({children, onClose}: ModalProps) {
         }
     }, [onClose])
 
-     const handleBackdrpClick = (e: React.MouseEvent<HTMLDivElement>) => {
+     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
          if(e.target === e.currentTarget)
            
-             console.log(e);
+            
             onClose();
     }
     
@@ -36,7 +36,7 @@ function Modal({children, onClose}: ModalProps) {
     
     return createPortal(
         <div
-            onClick={handleBackdrpClick}
+            onClick={handleBackdropClick}
             className={css.backdrop}
             role="dialog"
             aria-modal="true"

@@ -32,6 +32,7 @@ const validationSchema = Yup.object().shape({
   content: Yup.string()
     .max(500, 'Message too long'),
   tag: Yup.string()
+    .oneOf(["Todo", "Work", "Personal", "Meeting", "Shopping"] as const, "Invalid tag")
     .required("Select tag")
 })
 
@@ -45,6 +46,7 @@ function NoteForm({ onClose }: NoteFormProps) {
     mutationFn: createNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+        onClose();
     }
     })
 
@@ -59,7 +61,7 @@ function NoteForm({ onClose }: NoteFormProps) {
     
     mutate(values);
     actions.resetForm()
-     onClose();
+   
   };
   return (<Formik
       initialValues={initialValues}
