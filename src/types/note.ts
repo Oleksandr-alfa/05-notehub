@@ -11,7 +11,7 @@ export interface Note {
 export interface CreateNote {
     title: string;
     content: string;
-    tag: string;
+   tag: "Todo" | "Work" |"Personal" | "Meeting" | "Shopping",
 }
 
 
